@@ -1,0 +1,163 @@
+#!/usr/bin/env node
+// lobby — store listing art for every native app. `lobby help` for commands.
+import { existsSync, writeFileSync, readFileSync, mkdirSync, statSync, readdirSync } from "node:fs";
+import { join, resolve, basename } from "node:path";
+import { PROJECTS, SPECS, CHROME, CACHE, mkdirp, md5, run, listPNG, imageSize, esc } from "../src/util.mjs";
+import { discover } from "../src/discover.mjs";
+import { loadApp, render } from "../src/compose.mjs";
+import { buildPreviews } from "../src/preview.mjs";
+import { lint } from "../src/lint.mjs";
+import { state, pushASC, ascEnv, client } from "../src/asc.mjs";
+import { pushPlay, playReady } from "../src/play.mjs";
+
+const [cmd = "help", ...rest] = process.argv.slice(2);
+const flags = Object.fromEntries(rest.filter((a) => a.startsWith("--")).map((a) => { const [k, v] = a.slice(2).split("="); return [k, v ?? true]; }));
+const args = rest.filter((a) => !a.startsWith("--"));
+
+/** "moon-club", "./moon-club" or an absolute path → app folder. */
+const appDir = (x) => { if (!x) throw new Error("which app? (folder name under ~/Desktop/projects, or a path)"); const p = existsSync(x) ? resolve(x) : join(PROJECTS, x); if (!existsSync(p)) throw new Error(`no such app: ${x}`); return p; };
+const stateFile = (app) => join(app.out, "lobby-state.json");
+const readState = (app) => existsSync(stateFile(app)) ? JSON.parse(readFileSync(stateFile(app), "utf8")) : {};
+const writeState = (app, s) => (mkdirp(app.out), writeFileSync(stateFile(app), JSON.stringify(s, null, 2) + "\n"));
+
+/** Fingerprint of everything that feeds the frames: manifest + raw captures + icon. */
+function inputsHash(app) {
+  const parts = [readFileSync(join(app.dir, "store", "lobby.json"))];
+  for (const s of Object.values(app.raw)) for (const r of s) parts.push(Buffer.from(`${r.file}:${statSync(r.file).size}:${statSync(r.file).mtimeMs}`));
+  if (app.m.icon && existsSync(join(app.dir, app.m.icon))) parts.push(readFileSync(join(app.dir, app.m.icon)));
+  parts.push(readFileSync(new URL("../src/compose.mjs", import.meta.url)), readFileSync(new URL("../specs/stores.json", import.meta.url)));
+  return md5(Buffer.concat(parts));
+}
+const outHash = (app) => md5(Buffer.from(walkOut(app.out).map((f) => `${f}:${statSync(f).size}`).join("\n")));
+const walkOut = (d) => !existsSync(d) ? [] : readdirSync(d, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? walkOut(join(d, e.name)) : /\.(png|mp4)$/.test(e.name) ? [join(d, e.name)] : []).sort();
+
+async function seed(dir) {
+  // Pull the current App Store screenshots as raw captures: a starting point until the app has a capture script.
+  const app = { dir, m: JSON.parse(readFileSync(join(dir, "store", "lobby.json"), "utf8")) };
+  const s = await state(dir, app.m.ios?.bundleId);
+  if (!s.exists) return console.log("  no App Store Connect app to seed from");
+  const loc = (await s.api("GET", `/v1/appStoreVersions/${s.versionId}/appStoreVersionLocalizations`)).data[0];
+  const sets = await s.api("GET", `/v1/appStoreVersionLocalizations/${loc.id}/appScreenshotSets?include=appScreenshots&limit[appScreenshots]=10`);
+  const map = { APP_IPHONE_67: "iphone", APP_IPHONE_65: "iphone", APP_IPAD_PRO_3GEN_129: "ipad", APP_IPHONE_DUO: "duo" };
+  let n = 0;
+  for (const set of sets.data) {
+    const src = map[set.attributes.screenshotDisplayType]; if (!src) continue;
+    const d = mkdirp(join(dir, "store", "lobby", "raw", src));
+    for (const ref of set.relationships.appScreenshots.data) {
+      const a = sets.included.find((x) => x.id === ref.id)?.attributes; const t = a?.imageAsset; if (!t) continue;
+      const f = join(d, a.fileName.replace(/\.(jpe?g|png)$/i, "") + ".png");
+      if (existsSync(f)) continue;
+      writeFileSync(f, Buffer.from(await (await fetch(t.templateUrl.replace("{w}", t.width).replace("{h}", t.height).replace("{f}", "png"))).arrayBuffer())); n++;
+    }
+  }
+  console.log(`  seeded ${n} raw captures from App Store Connect (${s.name} ${s.version})`);
+}
+
+async function sheet(app) {
+  // One contact sheet per app: every target's frames in a row, for a fast visual check.
+  const rows = [];
+  for (const store of readdirSync(app.out).filter((d) => SPECS[d])) for (const t of readdirSync(join(app.out, store)).filter((d) => !d.includes("."))) {
+    const files = listPNG(join(app.out, store, t)); if (files.length) rows.push({ label: `${store}/${t}`, files: files.map((f) => join(app.out, store, t, f)) });
+  }
+  const RH = 520, html = `<!doctype html><html><body style="margin:0;background:#15161b;color:#ddd;font:600 22px ui-monospace,monospace;padding:24px">${rows.map((r) =>
+    `<div style="margin-bottom:24px"><div style="margin-bottom:8px">${esc(r.label)} · ${r.files.length}</div><div style="display:flex;gap:10px">${r.files.map((f) => `<img src="file://${f}" style="height:${RH}px;border-radius:8px">`).join("")}</div></div>`).join("")}</body></html>`;
+  const W = Math.min(7000, 48 + Math.max(...rows.map((r) => r.files.reduce((s, f) => { const { w, h } = imageSize(f); return s + RH * w / h + 10; }, 0)))), H = 48 + rows.length * (RH + 62);
+  const hf = join(app.out, "sheet.html"), out = join(app.out, "sheet.png");
+  writeFileSync(hf, html);
+  await run(CHROME, ["--headless=new", "--disable-gpu", "--hide-scrollbars", "--allow-file-access-from-files", `--user-data-dir=${join(CACHE, "chrome-sheet")}`, "--virtual-time-budget=4000", `--screenshot=${out}`, `--window-size=${Math.round(W)},${H}`, `file://${hf}`]).catch((e) => { if (!existsSync(out)) throw e; });
+  return out;
+}
+
+async function build(dir) {
+  const app = loadApp(dir);
+  const pre = await lint(app);
+  if (pre.errors.length) { pre.errors.forEach((e) => console.log(`  ✗ ${e}`)); throw new Error(`${app.m.slug}: manifest has ${pre.errors.length} error(s); fix store/lobby.json`); }
+  const only = flags.only ? String(flags.only).split(",") : undefined;
+  console.log(`▸ ${app.m.name}: rendering ${only ? only.join(",") : (app.m.stores ?? []).join(", ")}`);
+  const report = await render(app, { stores: app.m.stores, only, jobs: Number(flags.jobs ?? 3) });
+  if (!flags["no-preview"]) await buildPreviews(app, report);
+  const post = await lint(app, report);
+  for (const e of report) console.log(`  ${e.files.length ? "✓" : "·"} ${e.store}/${e.target}: ${e.files.length}${e.bespoke ? " (bespoke)" : e.aliasOf ? ` (= ${e.aliasOf})` : ""}`);
+  post.warns.forEach((w) => console.log(`  ! ${w}`)); post.errors.forEach((e) => console.log(`  ✗ ${e}`));
+  const sh = await sheet(app);
+  const st = readState(app);
+  writeState(app, { ...st, built: new Date().toISOString(), inputs: inputsHash(app), output: outHash(app), errors: post.errors, warns: post.warns });
+  console.log(`  sheet: ${sh}`);
+  if (post.errors.length) process.exitCode = 1;
+  return { app, report, post };
+}
+
+async function push(dir) {
+  const app = loadApp(dir), st = readState(app);
+  if (!st.built) throw new Error("nothing built yet: lobby build first");
+  if (st.errors?.length) throw new Error(`last build had ${st.errors.length} lint error(s); fix and rebuild before pushing`);
+  if (st.inputs !== inputsHash(app)) throw new Error("inputs changed since the last build: lobby build first");
+  // Rebuild the report from disk (push never renders).
+  const report = [];
+  for (const store of app.m.stores ?? []) for (const tk of Object.keys(SPECS[store]?.targets ?? {})) {
+    const d = join(app.out, store, tk); report.push({ store, target: tk, files: listPNG(d).map((f) => join(d, f)) });
+  }
+  console.log(`▸ ${app.m.name}: push${flags["dry-run"] ? " (dry run)" : ""}`);
+  const res = {};
+  if (app.m.stores.includes("appstore")) res.appstore = await pushASC(app, report, { dryRun: !!flags["dry-run"] });
+  if (app.m.stores.includes("play")) res.play = await pushPlay(app, report, { dryRun: !!flags["dry-run"] });
+  for (const s of app.m.stores.filter((x) => !["appstore", "play", "web"].includes(x))) console.log(`  ${s}: no upload API wired; assets staged in ${join(app.out, s)}`);
+  if (!flags["dry-run"]) writeState(app, { ...readState(app), pushed: { ...(st.pushed ?? {}), ...Object.fromEntries(Object.entries(res).filter(([, v]) => v?.pushed).map(([k]) => [k, { at: new Date().toISOString(), output: st.output }])) }, lastPush: res });
+}
+
+/** Everything Lobby knows, per app; the cron uses `--json` to decide whether to wake the agent. */
+async function status() {
+  const apps = discover(), rows = [], work = [];
+  const asc = ascEnv(); let ascApps = [];
+  if (asc) try { ascApps = (await client().api("GET", "/v1/apps?limit=200")).data.map((a) => a.attributes.bundleId); } catch { /* offline */ }
+  for (const a of apps) {
+    const row = { slug: a.slug, kinds: a.kinds.join("+"), ios: a.ios[0] ?? "", android: a.android[0] ?? "", manifest: a.manifest, inASC: a.ios.some((b) => ascApps.includes(b)) };
+    if (a.manifest) {
+      try {
+        const app = loadApp(a.dir), st = readState(app);
+        row.built = st.built ?? null; row.stale = st.inputs !== inputsHash(app); row.errors = st.errors?.length ?? null;
+        if (app.m.ios?.bundleId && row.inASC) { const s = await state(a.dir, app.m.ios.bundleId); row.asc = `${s.version} ${s.state}`; row.editable = s.editable; row.pushedCurrent = st.pushed?.appstore?.output === st.output; }
+        if (row.stale) work.push({ slug: a.slug, why: "inputs changed since last build" });
+        if (row.editable && !row.pushedCurrent) work.push({ slug: a.slug, why: `App Store ${row.asc}: editable and current assets not pushed` });
+        if (app.m.paused) row.paused = true;
+      } catch (e) { row.error = e.message; work.push({ slug: a.slug, why: `manifest error: ${e.message}` }); }
+    } else work.push({ slug: a.slug, why: "native app with no store/lobby.json: new app, needs a brief" });
+    rows.push(row);
+  }
+  const out = { at: new Date().toISOString(), apps: rows, work: work.filter((w) => !rows.find((r) => r.slug === w.slug)?.paused), play: playReady() ? "service account present" : "no service account (assets staged)" };
+  if (flags.json) return console.log(JSON.stringify(out, null, 2));
+  for (const r of rows) console.log(`${r.manifest ? "●" : "○"} ${r.slug.padEnd(16)} ${r.kinds.padEnd(16)} ${(r.ios || r.android).padEnd(28)} ${r.asc ?? (r.inASC ? "in ASC" : "")}${r.built ? `  built ${r.built.slice(0, 10)}${r.stale ? " (stale)" : ""}` : ""}${r.errors ? `  ${r.errors} errors` : ""}`);
+  console.log(`\nPlay: ${out.play}\nWork: ${out.work.length ? "\n" + out.work.map((w) => `  - ${w.slug}: ${w.why}`).join("\n") : "none"}`);
+}
+
+function init(dir) {
+  const f = join(dir, "store", "lobby.json");
+  if (existsSync(f)) return console.log(`  ${f} exists`);
+  const d = discover().find((a) => a.dir === dir) ?? { ios: [], android: [] };
+  mkdirSync(join(dir, "store"), { recursive: true });
+  writeFileSync(f, JSON.stringify(JSON.parse(readFileSync(new URL("../templates/lobby.json", import.meta.url), "utf8").replaceAll("__SLUG__", basename(dir)).replace("__BUNDLE__", d.ios[0] ?? "").replace("__PACKAGE__", d.android[0] ?? "")), null, 2) + "\n");
+  console.log(`  wrote ${f}: fill brand, shots and copy from the app's context (prompts/agent.md)`);
+}
+
+const HELP = `lobby — store art for every native app
+  status [--json]          every native app, its manifest, App Store state, and what needs doing
+  init <app>               scaffold store/lobby.json from discovery
+  seed <app>               pull current App Store screenshots as raw captures
+  build <app> [--only=appstore/iphone-69,play] [--no-preview]   render + previews + lint + contact sheet
+  lint <app>               check the manifest
+  sheet <app>              contact sheet of the current output
+  push <app> [--dry-run]   upload to editable App Store version / Play (never submits)
+  build-all | push-all     every app with a manifest`;
+
+try {
+  if (cmd === "status") await status();
+  else if (cmd === "init") init(appDir(args[0]));
+  else if (cmd === "seed") await seed(appDir(args[0]));
+  else if (cmd === "build") await build(appDir(args[0]));
+  else if (cmd === "lint") { const app = loadApp(appDir(args[0])); const r = await lint(app); r.warns.forEach((w) => console.log(`! ${w}`)); r.errors.forEach((e) => console.log(`✗ ${e}`)); if (r.errors.length) process.exitCode = 1; else console.log("✓ manifest ok"); }
+  else if (cmd === "sheet") console.log(await sheet(loadApp(appDir(args[0]))));
+  else if (cmd === "push") await push(appDir(args[0]));
+  else if (cmd === "build-all" || cmd === "push-all") {
+    for (const a of discover().filter((x) => x.manifest)) { try { await (cmd === "build-all" ? build(a.dir) : push(a.dir)); } catch (e) { console.log(`✗ ${a.slug}: ${e.message}`); process.exitCode = 1; } }
+  } else console.log(HELP);
+} catch (e) { console.error(`✗ ${e.message}`); process.exit(1); }

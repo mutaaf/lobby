@@ -1,0 +1,9 @@
+{
+  "name": "lobby",
+  "private": true,
+  "type": "module",
+  "description": "Store art for every native app: App Store, Google Play, Amazon, Galaxy, Alexa, web.",
+  "bin": { "lobby": "bin/lobby" },
+  "scripts": { "status": "node bin/lobby status", "up": "./install.sh && node bin/lobby status" },
+  "engines": { "node": ">=22" }
+}

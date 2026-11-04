@@ -1,0 +1,35 @@
+{
+  "lobby": 1,
+  "slug": "__SLUG__",
+  "name": "",
+  "category": "",
+  "tagline": "",
+  "audience": "general",
+  "stores": ["appstore", "play", "amazon", "galaxy", "web"],
+  "ipad": true,
+  "ios": { "bundleId": "__BUNDLE__" },
+  "android": { "package": "__PACKAGE__" },
+  "icon": "",
+  "brand": {
+    "mode": "dark",
+    "bg": "#101014",
+    "bg2": "#1c1c28",
+    "ink": "#ffffff",
+    "muted": "#c8c8d4",
+    "accent": "#ffb000",
+    "accent2": "#ff4f8b",
+    "glow": ["#ffb000", "#ff4f8b", "#4f9bff"],
+    "display": { "family": "Bricolage Grotesque", "weights": [800] },
+    "body": { "family": "Figtree", "weights": [600, 800] },
+    "mono": { "family": "JetBrains Mono", "weights": [700] },
+    "texture": "dots",
+    "ribbon": true
+  },
+  "raw": { "iphone": "store/lobby/raw/iphone", "ipad": "store/lobby/raw/ipad" },
+  "capture": { "command": "", "notes": "How to make fresh raw captures (simulator script). Empty = seeded from App Store Connect." },
+  "shots": [
+    { "id": "hook", "raw": "", "layout": "cover", "kicker": "", "title": "", "sub": "", "badge": "" }
+  ],
+  "feature": { "title": "", "sub": "" },
+  "avoid": []
+}

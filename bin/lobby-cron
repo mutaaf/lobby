@@ -1,0 +1,35 @@
+#!/bin/zsh
+# Daily trigger (launchd com.lobby.agent). Cheap first: `lobby status --json` costs no model tokens.
+# Claude is woken only when there is work: a new native app, changed inputs, or an App Store version
+# that just became editable with assets not yet pushed. Sundays it also does a full refresh pass.
+set -u
+LOBBY_DIR=${LOBBY_DIR:-$HOME/.local/share/lobby}
+LOG_DIR=$HOME/.cache/lobby; mkdir -p $LOG_DIR
+export PATH=/opt/homebrew/bin:/usr/local/bin:$HOME/.local/bin:$PATH
+export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
+STAMP=$(date +%Y%m%d-%H%M)
+cd $HOME/Desktop/projects || exit 1
+
+# Self-cancel guard (the fleet lesson: a loop nobody watches must expire loudly, not run forever).
+UNTIL=$(cat $LOBBY_DIR/SELF_CANCEL 2>/dev/null || echo 20991231)
+if [[ $(date +%Y%m%d) -gt $UNTIL ]]; then
+  osascript -e 'display notification "Lobby agent expired: bump ~/.local/share/lobby/SELF_CANCEL" with title "Lobby"' 2>/dev/null
+  exit 0
+fi
+
+node $LOBBY_DIR/bin/lobby status --json > $LOG_DIR/status-$STAMP.json 2>> $LOG_DIR/cron.log || exit 1
+WORK=$(node -e 'const s=require(process.argv[1]); console.log(s.work.length)' $LOG_DIR/status-$STAMP.json)
+FULL=$([[ $(date +%u) == 7 ]] && echo 1 || echo 0)
+if [[ $WORK == 0 && $FULL == 0 ]]; then echo "$STAMP no work" >> $LOG_DIR/cron.log; exit 0; fi
+
+BRIEF=$(cat $LOBBY_DIR/prompts/agent.md)
+LIST=$(node -e 'const s=require(process.argv[1]); console.log(s.work.map(w=>`- ${w.slug}: ${w.why}`).join("\n")||"- none flagged")' $LOG_DIR/status-$STAMP.json)
+EXTRA=$([[ $FULL == 1 ]] && echo "Sunday refresh: also review every app with a manifest. Are the captures stale against the app's latest release? Could the first three frames be stronger? Rebuild and push where it helps.")
+echo "$STAMP waking agent: $WORK item(s), full=$FULL" >> $LOG_DIR/cron.log
+claude -p "$BRIEF
+
+## Work list ($STAMP)
+$LIST
+$EXTRA" --permission-mode bypassPermissions --max-turns 150 --output-format json > $LOG_DIR/run-$STAMP.json 2>> $LOG_DIR/cron.log
+node -e 'try{const r=require(process.argv[1]); console.log(`'$STAMP' done cost=$${(r.total_cost_usd??0).toFixed(2)} turns=${r.num_turns}`)}catch{console.log("'$STAMP' run output unreadable")}' $LOG_DIR/run-$STAMP.json >> $LOG_DIR/cron.log
+ls -t $LOG_DIR/status-*.json | tail -n +31 | xargs -I{} rm -f {}

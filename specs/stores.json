@@ -1,0 +1,63 @@
+{
+  "_comment": "Every store surface Lobby renders for, as data. Sizes are what each console accepts (checked 2026-11). `device` picks the frame drawn around a capture; `source` is which raw folder feeds it. Add a store by adding an entry here; the composer, linter and status report read nothing else.",
+  "stores": {
+    "appstore": {
+      "label": "Apple App Store",
+      "targets": {
+        "iphone-69": { "kind": "screenshot", "w": 1320, "h": 2868, "device": "iphone", "source": "iphone", "ascType": "APP_IPHONE_67", "min": 1, "max": 10, "required": true, "label": "6.9\" iPhone" },
+        "ipad-13": { "kind": "screenshot", "w": 2064, "h": 2752, "device": "ipad", "source": "ipad", "fallbackSource": "iphone", "ascType": "APP_IPAD_PRO_3GEN_129", "min": 1, "max": 10, "required": "ipad", "label": "13\" iPad" },
+        "iphone-duo": { "kind": "screenshot", "w": 1398, "h": 2034, "device": "duo", "source": "duo", "ascType": "APP_IPHONE_DUO", "min": 1, "max": 10, "required": false, "label": "iPhone Duo (outer)" },
+        "preview-iphone": { "kind": "preview", "w": 886, "h": 1920, "source": "iphone", "ascType": "IPHONE_67", "minSec": 15, "maxSec": 30, "required": false, "label": "6.9\" iPhone app preview" },
+        "preview-ipad": { "kind": "preview", "w": 1200, "h": 1600, "source": "ipad", "fallbackSource": "iphone", "ascType": "IPAD_PRO_3GEN_129", "minSec": 15, "maxSec": 30, "required": false, "label": "13\" iPad app preview" }
+      },
+      "limits": { "name": 30, "subtitle": 30, "promotionalText": 170, "description": 4000, "keywords": 100, "whatsNew": 4000 },
+      "searchCard": 3
+    },
+    "play": {
+      "label": "Google Play",
+      "targets": {
+        "phone": { "kind": "screenshot", "w": 1080, "h": 1920, "device": "android", "source": "iphone", "playType": "phoneScreenshots", "min": 2, "max": 8, "required": true, "label": "Phone" },
+        "tablet-7": { "kind": "screenshot", "w": 1200, "h": 1920, "device": "tablet", "source": "ipad", "fallbackSource": "iphone", "playType": "sevenInchScreenshots", "min": 0, "max": 8, "required": "ipad", "label": "7\" tablet" },
+        "tablet-10": { "kind": "screenshot", "w": 1600, "h": 2560, "device": "tablet", "source": "ipad", "fallbackSource": "iphone", "playType": "tenInchScreenshots", "min": 0, "max": 8, "required": "ipad", "label": "10\" tablet" },
+        "feature": { "kind": "feature", "w": 1024, "h": 500, "playType": "featureGraphic", "required": true, "label": "Feature graphic" },
+        "icon": { "kind": "icon", "w": 512, "h": 512, "playType": "icon", "required": true, "label": "Hi-res icon" }
+      },
+      "limits": { "title": 30, "shortDescription": 80, "fullDescription": 4000 },
+      "searchCard": 3,
+      "rules": ["No Apple hardware in frames (the android frame is neutral).", "No iOS status bar: the composer crops it and draws an Android one."]
+    },
+    "amazon": {
+      "label": "Amazon Appstore (Fire tablets / phones)",
+      "targets": {
+        "phone": { "kind": "screenshot", "w": 1080, "h": 1920, "device": "android", "source": "iphone", "min": 3, "max": 10, "required": true, "label": "Phone/tablet screenshots", "alias": "play/phone" },
+        "promo": { "kind": "feature", "w": 1024, "h": 500, "required": false, "label": "Promotional image", "alias": "play/feature" },
+        "icon-small": { "kind": "icon", "w": 114, "h": 114, "required": true, "label": "Small icon" },
+        "icon-large": { "kind": "icon", "w": 512, "h": 512, "required": true, "label": "Large icon" }
+      },
+      "limits": { "title": 250, "shortDescription": 1200, "fullDescription": 4000 }
+    },
+    "galaxy": {
+      "label": "Samsung Galaxy Store",
+      "targets": {
+        "phone": { "kind": "screenshot", "w": 1080, "h": 1920, "device": "android", "source": "iphone", "min": 4, "max": 8, "required": true, "label": "Screenshots", "alias": "play/phone" },
+        "icon": { "kind": "icon", "w": 512, "h": 512, "required": true, "label": "Icon" }
+      },
+      "limits": { "title": 100, "fullDescription": 4000 }
+    },
+    "alexa": {
+      "label": "Alexa Skills Store",
+      "targets": {
+        "icon-small": { "kind": "icon", "w": 108, "h": 108, "required": true, "label": "Small skill icon" },
+        "icon-large": { "kind": "icon", "w": 512, "h": 512, "required": true, "label": "Large skill icon" },
+        "card": { "kind": "feature", "w": 1200, "h": 800, "required": false, "label": "Skill card / Echo Show background" }
+      },
+      "limits": { "name": 50, "summary": 160, "description": 4000, "examplePhrases": 3 }
+    },
+    "web": {
+      "label": "Web + social share (Playbill og:image)",
+      "targets": {
+        "og": { "kind": "feature", "w": 1200, "h": 630, "required": false, "label": "Open Graph card" }
+      }
+    }
+  }
+}
