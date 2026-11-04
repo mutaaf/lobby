@@ -34,6 +34,9 @@ const walkOut = (d) => !existsSync(d) ? [] : readdirSync(d, { withFileTypes: tru
 async function seed(dir) {
   // Pull the current App Store screenshots as raw captures: a starting point until the app has a capture script.
   const app = { dir, m: JSON.parse(readFileSync(join(dir, "store", "lobby.json"), "utf8")) };
+  app.out = join(dir, app.m.out ?? "store/lobby/out");
+  // Once Lobby has uploaded its own frames, the store holds framed shots: seeding again would frame a frame.
+  if (readState(app).pushed?.appstore) throw new Error("App Store already has Lobby frames; raw captures come from the app's capture command (or git) now, not seed");
   const s = await state(dir, app.m.ios?.bundleId);
   if (!s.exists) return console.log("  no App Store Connect app to seed from");
   const loc = (await s.api("GET", `/v1/appStoreVersions/${s.versionId}/appStoreVersionLocalizations`)).data[0];
