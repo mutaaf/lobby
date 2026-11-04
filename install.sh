@@ -21,6 +21,11 @@ cat > $PLIST <<EOF
   <key>StandardErrorPath</key><string>$HOME/.cache/lobby/launchd.log</string>
 </dict></plist>
 EOF
+# Reloading the job kills a run in progress (the first agent run died this way, 2026-11-04), so leave a running job
+# alone: the engine files are already refreshed above, and the plist itself rarely changes.
+if launchctl print gui/$(id -u)/com.lobby.agent 2>/dev/null | grep -q "state = running"; then
+  echo "agent run in progress: engine refreshed, job not reloaded"; exit
+fi
 launchctl bootout gui/$(id -u) $PLIST 2>/dev/null || true
 launchctl bootstrap gui/$(id -u) $PLIST
 echo "com.lobby.agent loaded: daily 07:20, engine at $DST, expires $(cat $DST/SELF_CANCEL)"
