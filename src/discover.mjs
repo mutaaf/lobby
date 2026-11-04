@@ -28,7 +28,8 @@ export function discover(root = PROJECTS) {
   for (const proj of readdirSync(root)) {
     const dir = join(root, proj);
     if (!isDir(dir) || IGNORE.has(proj) || proj.startsWith(".")) continue;
-    if (!existsSync(join(dir, ".git"))) continue;
+    // Real checkouts only: a linked worktree (.git is a file) is a copy of an app already listed.
+    if (!existsSync(join(dir, ".git")) || !statSync(join(dir, ".git")).isDirectory()) continue;
     const found = { slug: proj, dir, kinds: new Set(), ios: [], android: [], alexa: false, manifest: existsSync(join(dir, "store", "lobby.json")) };
     walk(dir, 4, (p, n) => {
       try {
