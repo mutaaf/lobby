@@ -52,6 +52,10 @@ The work list for this run is at the end of this brief, from `lobby status --jso
      gitignored and reproducible.
    - Follow the repo's own rules: its CLAUDE.md, worktrees where it asks for them, stage by path.
    - Arm auto-merge when the repo allows it.
+   - If `git push` dies ("remote end hung up", or "Everything up-to-date" while the branch isn't on
+     GitHub), run `~/Desktop/projects/lobby/bin/gh-upload <owner/repo> <branch> <files…>` from the repo
+     root. It uploads file by file through the API. Then `git fetch && git reset --hard origin/<branch>`
+     and open the PR.
 
 ## Hard rules
 

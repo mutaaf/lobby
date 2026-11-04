@@ -1,0 +1,26 @@
+#!/bin/zsh
+# gh-upload <owner/repo> <branch> <file>...   (run from the repo root)
+# Fallback for when `git push` dies with "remote end hung up" on this Mac's slow uplink: creates
+# <branch> from the default branch if it's missing, then PUTs each file through the contents API
+# (one small request each, retried). Afterwards: git fetch && git reset --hard origin/<branch>.
+set -u
+REPO=$1 BRANCH=$2; shift 2
+if ! gh api "repos/$REPO/git/ref/heads/$BRANCH" >/dev/null 2>&1; then
+  BASE=$(gh api "repos/$REPO" -q .default_branch)
+  SHA=$(gh api "repos/$REPO/git/ref/heads/$BASE" -q .object.sha)
+  gh api -X POST "repos/$REPO/git/refs" -f ref="refs/heads/$BRANCH" -f sha="$SHA" >/dev/null || { echo "could not create $BRANCH"; exit 1; }
+fi
+ok=0 n=0
+for f in "$@"; do
+  n=$((n+1))
+  existing=$(gh api "repos/$REPO/contents/$f?ref=$BRANCH" -q .sha 2>/dev/null)
+  body=$(mktemp)
+  node -e 'const [f,b,s]=process.argv.slice(1); const o={message:`Add ${f}\n\nCo-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>`,branch:b,content:require("fs").readFileSync(f).toString("base64")}; if(s) o.sha=s; process.stdout.write(JSON.stringify(o))' "$f" "$BRANCH" "$existing" > $body
+  for try in 1 2 3; do
+    if gh api -X PUT "repos/$REPO/contents/$f" --input $body >/dev/null 2>&1; then ok=$((ok+1)); break; fi
+    sleep 3
+  done
+  rm -f $body
+done
+echo "uploaded $ok of $n to $REPO@$BRANCH"
+[[ $ok == $n ]]
