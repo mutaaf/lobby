@@ -14,6 +14,7 @@ Read README.md first. The agent brief is `prompts/agent.md`; the rules there bin
 | Screenshots can't change on a version that's Waiting for Review / live | `pushASC` checks `EDITABLE` and stages; status flags the app once a version opens. |
 | Running from launchd | install.sh copies the engine to `~/.local/share/lobby`. The cron cds into ~/Desktop/projects for the app repos. Re-run `./install.sh` after changing the engine. |
 | xcode-select points at CommandLineTools on this Mac | `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` for every simctl/xcodebuild call (the cron exports it). |
+| Raw captures go in git as quality-90 JPEG, not PNG | A 55 MB PNG set (moon-club) made every `git push` die with "remote end hung up" on this Mac's ~200 KB/s uplink, and so did 4 MB. Single files through `gh api -X PUT repos/<o>/<r>/contents/<path>` got through, so the agent uses that when a push stalls. `sips -s format jpeg -s formatOptions 90`. |
 | The 17-0 repo forbids club names, marks and colours | Its `avoid` list carries the league and broadcaster names; frames name cities, never clubs. |
 
 ## Changing the look
