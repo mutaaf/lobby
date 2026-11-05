@@ -107,6 +107,7 @@ export async function pushASC(app, report, { dryRun = false, log = console.log }
   // Previews: one MP4 per preview set.
   const psets = (await api("GET", `/v1/appStoreVersionLocalizations/${loc.id}/appPreviewSets?limit=50`)).data;
   for (const [tk, t] of Object.entries(SPECS.appstore.targets).filter(([, t]) => t.kind === "preview")) {
+    if (t.required === "ipad" && !app.m.ipad) continue; // an old build may have left this video behind
     const f = join(app.out, "appstore", `${tk}.mp4`);
     if (!existsSync(f)) continue;
     if (dryRun) { log(`  appstore/${tk}: would upload preview to ${t.ascType}`); continue; }

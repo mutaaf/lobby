@@ -8,7 +8,7 @@
         "ipad-13": { "kind": "screenshot", "w": 2064, "h": 2752, "device": "ipad", "source": "ipad", "fallbackSource": "iphone", "ascType": "APP_IPAD_PRO_3GEN_129", "min": 1, "max": 10, "required": "ipad", "label": "13\" iPad" },
         "iphone-duo": { "kind": "screenshot", "w": 1398, "h": 2034, "device": "duo", "source": "duo", "ascType": "APP_IPHONE_DUO", "min": 1, "max": 10, "required": false, "label": "iPhone Duo (outer)" },
         "preview-iphone": { "kind": "preview", "w": 886, "h": 1920, "source": "iphone", "ascType": "IPHONE_67", "minSec": 15, "maxSec": 30, "required": false, "label": "6.9\" iPhone app preview" },
-        "preview-ipad": { "kind": "preview", "w": 1200, "h": 1600, "source": "ipad", "fallbackSource": "iphone", "ascType": "IPAD_PRO_3GEN_129", "minSec": 15, "maxSec": 30, "required": false, "label": "13\" iPad app preview" }
+        "preview-ipad": { "kind": "preview", "w": 1200, "h": 1600, "source": "ipad", "fallbackSource": "iphone", "ascType": "IPAD_PRO_3GEN_129", "minSec": 15, "maxSec": 30, "required": "ipad", "label": "13\" iPad app preview" }
       },
       "limits": { "name": 30, "subtitle": 30, "promotionalText": 170, "description": 4000, "keywords": 100, "whatsNew": 4000 },
       "searchCard": 3
