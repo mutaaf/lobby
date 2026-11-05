@@ -12,6 +12,3 @@ One line each, with the exact step. The agent appends; the owner removes a line 
   ready in `store/lobby/out/{amazon,galaxy}`.
 - **Alexa.** No app has a skill yet. When one does, the skill's `skill.json` is discovered and the icons and
   card render automatically. Publishing needs an Amazon developer account.
-- **COLD GAS App Store record.** Not in App Store Connect yet, and its brief is paused until the build is playable (cold-gas docs/NATIVE.md phase 7).
-  - When it's ready: App Store Connect → Apps → + → New App, bundle ID `com.mutaafaziz.coldgas`.
-  - Then add its `ascAppId` to `store/lobby.json`.
