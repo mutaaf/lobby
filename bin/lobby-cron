@@ -10,6 +10,9 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 STAMP=$(date +%Y%m%d-%H%M)
 cd $HOME/Desktop/projects || exit 1
 
+# Pause switch: touch ~/.local/share/lobby/PAUSED to stop the agent; delete it to resume.
+if [[ -e $LOBBY_DIR/PAUSED ]]; then echo "$STAMP paused" >> $LOG_DIR/cron.log; exit 0; fi
+
 # Self-cancel guard (the fleet lesson: a loop nobody watches must expire loudly, not run forever).
 UNTIL=$(cat $LOBBY_DIR/SELF_CANCEL 2>/dev/null || echo 20991231)
 if [[ $(date +%Y%m%d) -gt $UNTIL ]]; then
