@@ -7,6 +7,8 @@ renders and uploads. You supply the judgment: the words, the order and the look.
 
 The work list for this run is at the end of this brief, from `lobby status --json`. Do every item, then stop.
 
+Read `docs/LESSONS.md` in the engine before you start, and add to it if you learn something.
+
 ## For each app on the work list
 
 1. **Know the app before you write a word.** Read its README, CLAUDE.md/AGENTS.md, the store copy it already

@@ -1,6 +1,6 @@
 # Lobby: working notes
 
-Read README.md first. The agent brief is `prompts/agent.md`; the rules there bind any session working here.
+Read README.md first. The agent brief is `prompts/agent.md`; the rules there bind any session working here. `docs/LESSONS.md` has what already went wrong.
 
 ## Environment nuances
 
@@ -22,3 +22,15 @@ Read README.md first. The agent brief is `prompts/agent.md`; the rules there bin
 Layouts live in `portrait()` / `landscape()` / `reel()` in src/compose.mjs. Every size is a fraction of
 W/H so one layout serves every target. After a change, rebuild all three reference apps (moon-club: dark +
 kids, 18-0: dark sports, hearth-app: light retro) and look at each `sheet.png` before committing.
+
+## Definition of done
+
+- `npm test` passes. CI runs it on every PR.
+- For anything that changes the look: rebuild the reference apps and look at each `sheet.png`.
+- `./install.sh` after any engine change, because the daily job runs the installed copy.
+- A new way this broke goes in `docs/LESSONS.md`, and in a test if a test can catch it.
+
+## Controls
+
+- Pause: `touch ~/.local/share/lobby/PAUSED`. Delete it to resume.
+- Expiry: `~/.local/share/lobby/SELF_CANCEL`, with a notification when it passes.
