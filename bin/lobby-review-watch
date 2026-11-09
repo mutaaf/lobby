@@ -1,0 +1,41 @@
+#!/usr/bin/env node
+// Hourly: read every native app's App Store state and publish a Cue event when it changes.
+// No model, no cost. launchd com.lobby.review runs it. State is kept in ~/.cache/lobby/review-state.json.
+import { readFileSync, writeFileSync, existsSync, mkdirSync } from "node:fs";
+import { join } from "node:path";
+import { discover } from "../src/discover.mjs";
+import { state } from "../src/asc.mjs";
+import { CACHE } from "../src/util.mjs";
+
+const STATE = join(CACHE, "review-state.json");
+const TOKENS = join(process.env.HOME, ".config", "cue", "tokens");
+const CUE = process.env.CUE_URL ?? "https://mutaafaziz.com/cue/api/publish";
+
+const token = () => (existsSync(TOKENS) ? readFileSync(TOKENS, "utf8").split("\n").find((l) => l.startsWith("lobby="))?.slice(6) : null);
+const last = existsSync(STATE) ? JSON.parse(readFileSync(STATE, "utf8")) : {};
+const now = { ...last };
+const changes = [];
+
+for (const app of discover()) {
+  const bundle = app.ios[0];
+  if (!bundle) continue;
+  let s;
+  try { s = await state(app.dir, bundle); } catch (e) { console.error(`${app.slug}: ${e.message.slice(0, 120)}`); continue; }
+  if (!s.exists || !s.state) continue;
+  const key = bundle, cur = `${s.version}|${s.state}`;
+  if (last[key] && last[key].value !== cur) changes.push({ app: s.name, version: s.version, from: last[key].value.split("|")[1], to: s.state, at: cur });
+  now[key] = { value: cur, app: s.name };
+}
+
+const t = token();
+let failed = false;
+for (const c of changes) {
+  if (!t) { console.error("no lobby token in ~/.config/cue/tokens"); failed = true; break; }
+  const body = { type: "app.review.changed", id: `review:${c.app}:${c.at}`.replace(/[^\w.:-]/g, "_").slice(0, 120), data: { app: c.app, version: c.version, from: c.from, to: c.to } };
+  const r = await fetch(CUE, { method: "POST", headers: { authorization: `Bearer ${t}`, "content-type": "application/json" }, body: JSON.stringify(body) }).catch((e) => ({ ok: false, status: e.message }));
+  console.log(`${c.app} ${c.version}: ${c.from} -> ${c.to} (cue ${r.status})`);
+  if (!r.ok) failed = true;
+}
+// Only remember what was told, so a failed publish is retried next hour.
+if (!failed) { mkdirSync(CACHE, { recursive: true }); writeFileSync(STATE, JSON.stringify(now, null, 2)); }
+console.log(`${new Date().toISOString()} checked ${Object.keys(now).length} apps, ${changes.length} change(s)`);

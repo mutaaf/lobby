@@ -32,5 +32,7 @@ kids, 18-0: dark sports, hearth-app: light retro) and look at each `sheet.png` b
 
 ## Controls
 
+- Review watcher: `com.lobby.review` runs `bin/lobby-review-watch` hourly with no model, and publishes `app.review.changed` to Cue (github.com/mutaaf/cue) when an App Store state moves. State: `~/.cache/lobby/review-state.json`, log: `~/.cache/lobby/review.log`. It remembers a change only after Cue accepts it, so a failed publish retries next hour.
+
 - Pause: `touch ~/.local/share/lobby/PAUSED`. Delete it to resume.
 - Expiry: `~/.local/share/lobby/SELF_CANCEL`, with a notification when it passes.
