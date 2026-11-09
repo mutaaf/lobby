@@ -41,7 +41,7 @@ export function discover(root = PROJECTS) {
         else if (n === "skill.json" || n === "ask-resources.json") { found.alexa = true; found.kinds.add("alexa"); }
       } catch { /* unreadable file: ignore */ }
     });
-    const clean = (l) => [...new Set(l.filter((b) => b && !b.includes("$") && !/\.(tests?|uitests|widgets?|remote|extension|intents?|watchkitapp|clip)$/i.test(b)))];
+    const clean = (l) => [...new Set(l.filter((b) => b && !b.includes("$") && !/\.(tests?|uitests|widgets?|remote|extension|intents?|watchkitapp|clip)$/i.test(b) && !/(UI)?Tests?$/.test(b)))];
     found.ios = clean(found.ios); found.android = clean(found.android);
     if (!found.kinds.size || (!found.ios.length && !found.android.length && !found.alexa)) continue;
     found.kinds = [...found.kinds];

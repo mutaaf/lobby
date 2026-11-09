@@ -49,3 +49,10 @@ test("discovery finds a real checkout and skips a linked worktree", () => {
   writeFileSync(join(root, "copy", "project.yml"), "PRODUCT_BUNDLE_IDENTIFIER: com.example.copy\n");
   assert.deepEqual(discover(root).map((a) => a.slug), ["real"]);
 });
+test("a UI-test target is not the app's bundle id", () => {
+  const root = mkdtempSync(join(tmpdir(), "projects-"));
+  mkdirSync(join(root, "app", ".git"), { recursive: true });
+  writeFileSync(join(root, "app", "project.yml"), "PRODUCT_BUNDLE_IDENTIFIER: com.example.AppUITests\nPRODUCT_BUNDLE_IDENTIFIER: com.example.app\n");
+  assert.deepEqual(discover(root)[0].ios, ["com.example.app"]);
+});
+
