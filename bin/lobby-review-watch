@@ -11,6 +11,20 @@ const STATE = join(CACHE, "review-state.json");
 const TOKENS = join(process.env.HOME, ".config", "cue", "tokens");
 const CUE = process.env.CUE_URL ?? "https://mutaafaziz.com/cue/api/publish";
 
+// Retirement rule: Stage Manager (github.com/mutaaf/stage-manager) reads the same App Store states in the cloud and
+// publishes the same ids. Cue's /cue/api/agreement says "ready" once Stage Manager logged every review change
+// first for 14 days with no failed tick. Then this watcher switches itself off for good; nothing else changes.
+const AGREE = process.env.CUE_AGREEMENT ?? "https://mutaafaziz.com/cue/api/agreement";
+const verdict = await fetch(AGREE).then((r) => (r.ok ? r.json() : null)).catch(() => null);
+if (verdict?.ready && !process.env.LOBBY_KEEP_WATCH) {
+  const { execFileSync } = await import("node:child_process");
+  const label = `gui/${process.getuid()}/com.lobby.review`;
+  console.log(`${new Date().toISOString()} retiring: Stage Manager came first ${verdict.stageFirst} time(s) in ${verdict.days} days, Lobby ${verdict.lobbyFirst}, ${verdict.ticksOk} ticks ok`);
+  mkdirSync(CACHE, { recursive: true }); writeFileSync(join(CACHE, "review-retired.json"), JSON.stringify({ at: new Date().toISOString(), verdict }, null, 2));
+  for (const args of [["disable", label], ["bootout", label]]) { try { execFileSync("launchctl", args, { stdio: "ignore" }); } catch { /* already off */ } }
+  process.exit(0);
+}
+
 const token = () => (existsSync(TOKENS) ? readFileSync(TOKENS, "utf8").split("\n").find((l) => l.startsWith("lobby="))?.slice(6) : null);
 const last = existsSync(STATE) ? JSON.parse(readFileSync(STATE, "utf8")) : {};
 const now = { ...last };
