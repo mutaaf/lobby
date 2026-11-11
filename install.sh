@@ -29,13 +29,17 @@ fi
 launchctl bootout gui/$(id -u) $PLIST 2>/dev/null || true
 launchctl bootstrap gui/$(id -u) $PLIST
 # Hourly App Store review watcher (bin/lobby-review-watch): no model, publishes changes to Cue.
+# Pin an absolute Node >= 22: a login shell finds /usr/local/bin/node (v16) first, which can't run an
+# extensionless ES module, and the watcher died silently on 2026-11-09.
+NODE=$(for n in /opt/homebrew/bin/node $(command -v node); do [[ -x $n ]] && (( $($n -p "process.versions.node.split('.')[0]") >= 22 )) && echo $n && break; done)
+[[ -n $NODE ]] || { echo "no Node >= 22 found for com.lobby.review"; exit 1; }
 RPLIST=$HOME/Library/LaunchAgents/com.lobby.review.plist
 cat > $RPLIST <<EOF
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0"><dict>
   <key>Label</key><string>com.lobby.review</string>
-  <key>ProgramArguments</key><array><string>/bin/zsh</string><string>-l</string><string>-c</string><string>cd \$HOME/Desktop/projects 2>/dev/null; node $DST/bin/lobby-review-watch</string></array>
+  <key>ProgramArguments</key><array><string>/bin/zsh</string><string>-l</string><string>-c</string><string>cd \$HOME/Desktop/projects 2>/dev/null; $NODE $DST/bin/lobby-review-watch</string></array>
   <key>StartInterval</key><integer>3600</integer>
   <key>StandardOutPath</key><string>$HOME/.cache/lobby/review.log</string>
   <key>StandardErrorPath</key><string>$HOME/.cache/lobby/review.log</string>
