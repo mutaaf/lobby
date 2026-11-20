@@ -309,9 +309,9 @@ async function chrome(html, file, W, H) {
   return file;
 }
 
-/** Which shots a target gets: shot.stores limits it; the target's max caps it. */
+/** Which shots a target may get: shot.stores limits it. The target's max caps the shots it has captures for (render). */
 function shotsFor(app, storeKey, target) {
-  return (app.m.shots ?? []).filter((s) => !s.stores || s.stores.includes(storeKey)).slice(0, target.max ?? 10);
+  return (app.m.shots ?? []).filter((s) => !s.stores || s.stores.includes(storeKey));
 }
 
 function resolveRaw(app, target, shot, which = "raw") {
@@ -364,7 +364,7 @@ export async function render(app, { stores = app.m.stores ?? ["appstore"], only,
         continue;
       }
       if (target.source === "duo" && !app.raw.duo.length) { entry.skipped.push("no duo captures"); continue; }
-      const usable = shots.map((s) => ({ s, raw: resolveRaw(app, target, s), raw2: resolveRaw(app, target, s, "raw2") })).filter((x) => x.raw || entry.skipped.push(`${x.s.raw}: no ${target.source} capture`) && false);
+      const usable = shots.map((s) => ({ s, raw: resolveRaw(app, target, s), raw2: resolveRaw(app, target, s, "raw2") })).filter((x) => x.raw || entry.skipped.push(`${x.s.raw}: no ${target.source} capture`) && false).slice(0, target.max ?? 10);
       const N = usable.length;
       usable.forEach(({ s, raw, raw2 }, i) => {
         const f = join(dir, `${String(i + 1).padStart(2, "0")}-${s.id ?? s.raw}.png`);
