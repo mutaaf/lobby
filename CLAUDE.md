@@ -11,6 +11,7 @@ Read README.md first. The agent brief is `prompts/agent.md`; the rules there bin
 | Android status-bar sampling needs canvas `getImageData` on the capture | Captures are inlined as data: URIs, so the canvas is never tainted by file://. |
 | `zoompan` emits `d` frames *per input frame* | Previews feed each still once (no `-loop`); with `-loop` an 8-shot preview ran 30.4 s and failed Apple's 30 s limit. |
 | App Store display types: there's no `APP_IPHONE_69` | 6.9" (1320×2868) goes in `APP_IPHONE_67`; previews use `IPHONE_67` / `IPAD_PRO_3GEN_129`. |
+| App previews must be full-screen recordings | Rendered reels (screen inside a caption frame) got Hinge Pop 0.3.2 a 2.3.4 rejection on 2026-11-21. `push` skips previews unless the manifest sets `"previews": "recording"`. |
 | Screenshots can't change on a version that's Waiting for Review / live | `pushASC` checks `EDITABLE` and stages; status flags the app once a version opens. |
 | Running from launchd | install.sh copies the engine to `~/.local/share/lobby`. The cron cds into ~/Desktop/projects for the app repos. Re-run `./install.sh` after changing the engine. |
 | xcode-select points at CommandLineTools on this Mac | `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` for every simctl/xcodebuild call (the cron exports it). |
