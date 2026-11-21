@@ -108,6 +108,10 @@ export async function pushASC(app, report, { dryRun = false, log = console.log }
   const psets = (await api("GET", `/v1/appStoreVersionLocalizations/${loc.id}/appPreviewSets?limit=50`)).data;
   for (const [tk, t] of Object.entries(SPECS.appstore.targets).filter(([, t]) => t.kind === "preview")) {
     if (t.required === "ipad" && !app.m.ipad) continue; // an old build may have left this video behind
+    // App Review rejected Hinge Pop 0.3.2 under 2.3.4 (2026-11-21) because these reels put the screen inside a
+    // captioned frame. Apple wants previews to be full-screen recordings of the app, so a rendered reel is
+    // never uploaded. Opt in with "previews": "recording" only once the MP4 is a real full-screen capture.
+    if (app.m.previews !== "recording") { log(`  appstore/${tk}: preview skipped (reels are framed; Apple 2.3.4)`); continue; }
     const f = join(app.out, "appstore", `${tk}.mp4`);
     if (!existsSync(f)) continue;
     if (dryRun) { log(`  appstore/${tk}: would upload preview to ${t.ascType}`); continue; }
