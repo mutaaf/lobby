@@ -39,56 +39,51 @@
   },
   {
    "t": "clip",
-   "src": "65",
-   "ss": 1,
-   "dur": 1.4,
+   "src": "~/Desktop/projects/cold-gas/dist-clips/cg-show-inverted.mp4",
+   "ss": 6.2,
+   "dur": 2.2,
    "x": 0.5,
+   "y": 0.92,
    "zoom": [
-    1.05,
-    1.15
+    1.5,
+    1.58
    ],
    "grade": "teal",
    "in": "whip",
-   "sfx": [
-    [
-     0.0,
-     "whoosh",
-     0.5
-    ]
-   ]
-  },
-  {
-   "t": "clip",
-   "src": "64",
-   "ss": 6,
-   "dur": 1.9,
-   "x": 0.5,
-   "zoom": [
-    1.0,
-    1.12
-   ],
-   "grade": "teal",
-   "in": "cut",
    "cap": [
     "*Ten* thrusters."
    ],
    "sfx": [
     [
-     0.1,
-     "engine",
-     0.7
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     0.3,
+     "rocket",
+     0.6
     ]
-   ]
+   ],
+   "srcl": "~/Desktop/projects/cold-gas/store/portals/crazygames/video-landscape-1920x1080.mp4",
+   "ssl": 8.0,
+   "zooml": [
+    1.3,
+    1.38
+   ],
+   "yl": 0.45,
+   "xl": 0.5
   },
   {
    "t": "clip",
-   "src": "45228",
-   "ss": 1.5,
+   "src": "~/Desktop/projects/cold-gas/dist-clips/cg-show-roll.mp4",
+   "ss": 0.6,
    "dur": 2.1,
-   "x": 0.57,
+   "x": 0.5,
+   "y": 0.92,
    "zoom": [
-    1.0,
-    1.1
+    1.5,
+    1.58
    ],
    "grade": "teal",
    "in": "flash",
@@ -98,15 +93,23 @@
    "sfx": [
     [
      0.0,
-     "rocket",
-     0.8
+     "rocketland",
+     0.5
     ],
     [
-     0.3,
-     "rocketland",
-     0.45
+     0.2,
+     "engine",
+     0.5
     ]
-   ]
+   ],
+   "srcl": "~/Desktop/projects/cold-gas/store/portals/crazygames/video-landscape-1920x1080.mp4",
+   "ssl": 15.2,
+   "zooml": [
+    1.3,
+    1.38
+   ],
+   "yl": 0.45,
+   "xl": 0.5
   },
   {
    "t": "green",
@@ -179,18 +182,19 @@
   },
   {
    "t": "clip",
-   "src": "52427",
-   "ss": 0.5,
-   "dur": 2.0,
-   "x": 0.2,
+   "src": "~/Desktop/projects/cold-gas/dist-clips/cg-wall.mp4",
+   "ss": 3.0,
+   "dur": 2.2,
+   "x": 0.5,
+   "y": 0.92,
    "zoom": [
-    1.0,
-    1.08
+    1.5,
+    1.58
    ],
-   "grade": "warm",
+   "grade": "teal",
    "in": "whip",
    "cap": [
-    "Then just *drive*."
+    "Then up the *wall*."
    ],
    "sfx": [
     [
@@ -201,9 +205,17 @@
     [
      0.2,
      "engine",
-     0.4
+     0.45
     ]
-   ]
+   ],
+   "srcl": "~/Desktop/projects/cold-gas/store/portals/crazygames/video-landscape-1920x1080.mp4",
+   "ssl": 10.5,
+   "zooml": [
+    1.3,
+    1.38
+   ],
+   "yl": 0.45,
+   "xl": 0.5
   },
   {
    "t": "card",

@@ -40,6 +40,7 @@ class Clip:
 
     @classmethod
     def get(cls, src):
+        src = os.path.expanduser(src)
         p = src if os.path.isabs(src) else os.path.join(STOCK, "footage", f"{src}.mp4")
         if p not in cls.cache:
             cls.cache[p] = Clip(p)
@@ -282,9 +283,11 @@ def end_card(W, H, t, dur, app):
 
 
 # ---------- renderer ----------
-def render(tl, W, H, out, mute=False):
+def render(tl, W, H, out, mute=False, nocap=False, nocard=False):
     app = tl["app"]
-    segs = tl["segments"]
+    segs = [s for s in tl["segments"] if not (nocard and s["t"] == "card")]
+    if nocap:
+        segs = [{k: v for k, v in s.items() if k != "cap"} for s in segs]
     vig = vignette(W, H)
     rng = np.random.default_rng(7)
     grains = [rng.normal(0, 1, (H // 2, W // 2)).astype(np.float32) for _ in range(6)]
@@ -303,13 +306,15 @@ def render(tl, W, H, out, mute=False):
             cues.append((t0 + off, name, vol))
         ins = None
         if s.get("insert"):
-            ins = load_img(s["insert"]) if not str(s["insert"]).isdigit() else None  # digits = a footage id
+            ins = load_img(s["insert"]) if not str(s["insert"]).isdigit() else None
         for i in range(n):
             u = i / max(1, n - 1)
             tt = i / FPS
+            L = False
             if s["t"] in ("clip", "green"):
-                c = Clip.get(s["src"])
-                f = c.at(s.get("ss", 0) + tt * s.get("speed", 1.0))
+                L = landscape and "srcl" in s  # optional native-landscape source for 16:9 renders
+                c = Clip.get(s["srcl"] if L else s["src"])
+                f = c.at((s["ssl"] if L else s.get("ss", 0)) + tt * s.get("speed", 1.0))
                 if s["t"] == "green":
                     if ins is not None:
                         insert = ins
@@ -321,9 +326,10 @@ def render(tl, W, H, out, mute=False):
                         if insert.shape[0] > hh:
                             yy = int((insert.shape[0] - hh) * u); insert = insert[yy:yy + hh]
                     f = composite_green(f, insert, tracker, s.get("glow", 0.0))
-                z0, z1 = s.get("zoom", (1.0, 1.08))
+                z0, z1 = s.get("zooml", s.get("zoom", (1.0, 1.08))) if landscape else s.get("zoom", (1.0, 1.08))
                 key = "xl" if landscape else "x"
-                f = cover(f, W, H, s.get(key, s.get("x", 0.5)), s.get("y", 0.5), z0 + (z1 - z0) * u)
+                yv = s.get("yl", 0.5) if L and landscape else s.get("y", 0.5)
+                f = cover(f, W, H, s.get(key, s.get("x", 0.5)), yv, z0 + (z1 - z0) * u)
                 f = grade(f, s.get("grade", "teal"))
             elif s["t"] == "card":
                 f = end_card(W, H, tt, s["dur"], app)
@@ -403,4 +409,4 @@ def mix_audio(tl, cues, total, out):
 if __name__ == "__main__":
     tl = json.load(open(sys.argv[1]))
     W, H = int(sys.argv[2]), int(sys.argv[3])
-    render(tl, W, H, sys.argv[4], mute="--mute" in sys.argv)
+    render(tl, W, H, sys.argv[4], mute="--mute" in sys.argv, nocap="--nocap" in sys.argv, nocard="--nocard" in sys.argv)

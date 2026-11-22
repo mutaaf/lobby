@@ -28,6 +28,14 @@ A full 1080x1920 render takes about 2 minutes. Re-encode for delivery: social `-
 | `green` | a green-screen phone/TV with the app inside | as `clip`, plus `insert` (a screenshot path, or a footage id for video), `tv` (16:9 insert) |
 | `card` | icon end card | `dur` |
 
+A `clip` can also carry `srcl` / `ssl` / `zooml` / `yl`: a native-landscape source used only for 16:9 renders.
+Flags: `--mute` (no audio), `--nocap` (no captions), `--nocard` (drop the end card): a landing backdrop behind
+other UI wants `--mute --nocap --nocard`.
+
+**Real brands:** some apps forbid real brand, product or vehicle likenesses (Cold Gas AGENTS.md §3.7, 17-0's
+no-club-marks rule). Stock shots of real cars, rockets or branded helmets are out for those apps; use the
+app's own gameplay clips instead (Cold Gas: `dist-clips/`, `store/portals/crazygames/`).
+
 Every segment can have `cap` (lines; `*word*` takes the accent colour), `in` (cut, fade, whip, flash) and
 `sfx` (`[offset, sound, volume]`). Look at a contact sheet of every render before shipping:
 `ffmpeg -i out.mp4 -vf "fps=2,scale=180:-1,tile=10x4" -frames:v 1 sheet.jpg`.
