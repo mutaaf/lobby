@@ -1,0 +1,219 @@
+{
+ "app": {
+  "name": "Hearth",
+  "tagline": "One remote for every TV in the house.",
+  "bg": "#161821",
+  "accent": "#E8521A",
+  "ink": "#F6F1EA",
+  "icon": "~/Desktop/projects/hearth-app/assets/icon.png"
+ },
+ "beds": [
+  [
+   "rain_glass",
+   0,
+   6,
+   0.55
+  ],
+  [
+   "fire",
+   3.2,
+   19,
+   0.42
+  ],
+  [
+   "roomtone",
+   0,
+   19,
+   0.25
+  ]
+ ],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "26091",
+   "ss": 3,
+   "dur": 2.6,
+   "x": 0.28,
+   "xl": 0.5,
+   "zoom": [
+    1.0,
+    1.08
+   ],
+   "grade": "night",
+   "cap": [
+    "Movie night."
+   ],
+   "sfx": []
+  },
+  {
+   "t": "clip",
+   "src": "2709",
+   "ss": 2,
+   "dur": 1.6,
+   "x": 0.45,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "grade": "warm",
+   "in": "fade",
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.45
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "9083",
+   "ss": 0.5,
+   "dur": 3.0,
+   "insert": "~/Desktop/projects/hearth-app/store/screenshots/raw/dark-house.png",
+   "x": 0.78,
+   "zoom": [
+    1.0,
+    1.05
+   ],
+   "grade": "night",
+   "in": "whip",
+   "cap": [
+    "*One* remote.",
+    "Every TV."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     0.9,
+     "tap",
+     0.9
+    ],
+    [
+     1.9,
+     "click",
+     0.6
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "9083",
+   "ss": 4.0,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/hearth-app/store/screenshots/raw/dark-remote.png",
+   "x": 0.85,
+   "zoom": [
+    1.0,
+    1.05
+   ],
+   "grade": "night",
+   "in": "cut",
+   "cap": [
+    "Swipe. *Click.*"
+   ],
+   "sfx": [
+    [
+     0.4,
+     "bubble",
+     0.8
+    ],
+    [
+     1.2,
+     "click",
+     0.6
+    ],
+    [
+     1.8,
+     "bubble",
+     0.7
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "5398",
+   "ss": 1,
+   "dur": 3.2,
+   "insert": "2709",
+   "iss": 4,
+   "tv": true,
+   "x": 0.32,
+   "xl": 0.5,
+   "zoom": [
+    1.0,
+    1.06
+   ],
+   "grade": "warm",
+   "in": "flash",
+   "glow": 0.1,
+   "cap": [
+    "Any *screen*",
+    "becomes a hearth."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "tap",
+     0.9
+    ],
+    [
+     0.05,
+     "whoosh2",
+     0.5
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "8839",
+   "ss": 1,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/hearth-app/store/screenshots/raw/scene-editor.png",
+   "x": 0.5,
+   "zoom": [
+    1.05,
+    1.1
+   ],
+   "grade": "teal",
+   "in": "whip",
+   "cap": [
+    "Movie night,",
+    "*one tap.*"
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     1.0,
+     "tap",
+     0.9
+    ],
+    [
+     1.5,
+     "sparkle",
+     0.5
+    ]
+   ]
+  },
+  {
+   "t": "card",
+   "dur": 3.0,
+   "in": "fade",
+   "sfx": [
+    [
+     0.0,
+     "trailer",
+     0.55
+    ]
+   ]
+  }
+ ]
+}

@@ -1,0 +1,221 @@
+{
+ "app": {
+  "name": "Cold Gas",
+  "tagline": "Ten thrusters. One roll. Stick the landing.",
+  "bg": "#0A0E16",
+  "accent": "#BFE6FF",
+  "ink": "#F1F4F7",
+  "icon": "~/Desktop/projects/cold-gas/ios/ColdGas/Resources/Assets.xcassets/AppIcon.appiconset/icon-1024.png"
+ },
+ "beds": [
+  [
+   "roomtone",
+   0,
+   21,
+   0.3
+  ],
+  [
+   "engine",
+   2.0,
+   9,
+   0.35
+  ]
+ ],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "44702",
+   "ss": 1,
+   "dur": 2.0,
+   "x": 0.5,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "grade": "night",
+   "cap": [
+    "Cold night."
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "65",
+   "ss": 1,
+   "dur": 1.4,
+   "x": 0.5,
+   "zoom": [
+    1.05,
+    1.15
+   ],
+   "grade": "teal",
+   "in": "whip",
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ]
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "64",
+   "ss": 6,
+   "dur": 1.9,
+   "x": 0.5,
+   "zoom": [
+    1.0,
+    1.12
+   ],
+   "grade": "teal",
+   "in": "cut",
+   "cap": [
+    "*Ten* thrusters."
+   ],
+   "sfx": [
+    [
+     0.1,
+     "engine",
+     0.7
+    ]
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "45228",
+   "ss": 1.5,
+   "dur": 2.1,
+   "x": 0.57,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "grade": "teal",
+   "in": "flash",
+   "cap": [
+    "One *roll*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "rocket",
+     0.8
+    ],
+    [
+     0.3,
+     "rocketland",
+     0.45
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "45345",
+   "ss": 0.3,
+   "dur": 2.8,
+   "insert": "~/Desktop/projects/cold-gas/store/lobby/raw/iphone/1-flight.jpg",
+   "x": 0.78,
+   "zoom": [
+    1.0,
+    1.05
+   ],
+   "grade": "teal",
+   "in": "whip",
+   "cap": [
+    "Stick the",
+    "*landing*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     1.0,
+     "tap",
+     0.9
+    ],
+    [
+     1.6,
+     "whoosh2",
+     0.4
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "45345",
+   "ss": 4.8,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/cold-gas/store/lobby/raw/iphone/3-panel.jpg",
+   "x": 0.78,
+   "zoom": [
+    1.02,
+    1.06
+   ],
+   "grade": "teal",
+   "in": "cut",
+   "cap": [
+    "Three *judges*."
+   ],
+   "sfx": [
+    [
+     0.9,
+     "tap",
+     0.9
+    ],
+    [
+     1.1,
+     "achieve",
+     0.5
+    ],
+    [
+     1.2,
+     "crowd",
+     0.45
+    ]
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "52427",
+   "ss": 0.5,
+   "dur": 2.0,
+   "x": 0.2,
+   "zoom": [
+    1.0,
+    1.08
+   ],
+   "grade": "warm",
+   "in": "whip",
+   "cap": [
+    "Then just *drive*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     0.2,
+     "engine",
+     0.4
+    ]
+   ]
+  },
+  {
+   "t": "card",
+   "dur": 3.0,
+   "in": "fade",
+   "sfx": [
+    [
+     0.0,
+     "trailer",
+     0.55
+    ]
+   ]
+  }
+ ]
+}

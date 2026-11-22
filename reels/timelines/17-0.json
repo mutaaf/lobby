@@ -1,0 +1,223 @@
+{
+ "app": {
+  "name": "17-0",
+  "tagline": "Seven picks. One perfect season.",
+  "bg": "#070E3A",
+  "accent": "#FFC531",
+  "ink": "#FFFFFF",
+  "icon": "~/Desktop/projects/18-0/apps/mobile/assets/icon.png"
+ },
+ "beds": [
+  [
+   "crowd",
+   0,
+   6,
+   0.25
+  ],
+  [
+   "roomtone",
+   0,
+   20,
+   0.3
+  ],
+  [
+   "chant",
+   11,
+   17,
+   0.3
+  ]
+ ],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "42554",
+   "ss": 0.2,
+   "dur": 2.0,
+   "speed": 0.8,
+   "x": 0.72,
+   "zoom": [
+    1.0,
+    1.1
+   ],
+   "grade": "night",
+   "cap": [
+    "*Seven* picks."
+   ],
+   "sfx": [
+    [
+     0.2,
+     "whoosh",
+     0.35
+    ]
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "42545",
+   "ss": 1,
+   "dur": 2.4,
+   "x": 0.5,
+   "zoom": [
+    1.05,
+    1.15
+   ],
+   "grade": "night",
+   "in": "whip",
+   "cap": [
+    "One perfect",
+    "*season*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "8839",
+   "ss": 0.5,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/18-0/store/lobby/raw/iphone/2-spin.jpg",
+   "x": 0.5,
+   "zoom": [
+    1.0,
+    1.06
+   ],
+   "grade": "teal",
+   "in": "flash",
+   "cap": [
+    "Spin *history*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh2",
+     0.45
+    ],
+    [
+     0.8,
+     "tap",
+     0.9
+    ],
+    [
+     1.2,
+     "click",
+     0.6
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "45345",
+   "ss": 0.5,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/18-0/store/lobby/raw/iphone/6-field.jpg",
+   "x": 0.78,
+   "zoom": [
+    1.0,
+    1.05
+   ],
+   "grade": "teal",
+   "in": "whip",
+   "cap": [
+    "Build *seven*."
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh",
+     0.5
+    ],
+    [
+     0.7,
+     "bubble",
+     0.8
+    ],
+    [
+     1.3,
+     "bubble",
+     0.7
+    ],
+    [
+     1.9,
+     "click",
+     0.6
+    ]
+   ]
+  },
+  {
+   "t": "green",
+   "src": "45345",
+   "ss": 5.0,
+   "dur": 2.6,
+   "insert": "~/Desktop/projects/18-0/store/lobby/raw/iphone/7-result.jpg",
+   "x": 0.78,
+   "zoom": [
+    1.0,
+    1.06
+   ],
+   "grade": "teal",
+   "in": "cut",
+   "cap": [
+    "Chase",
+    "*perfection*."
+   ],
+   "sfx": [
+    [
+     0.9,
+     "tap",
+     0.9
+    ],
+    [
+     1.0,
+     "achieve",
+     0.55
+    ],
+    [
+     1.1,
+     "crowd",
+     0.6
+    ]
+   ]
+  },
+  {
+   "t": "clip",
+   "src": "42554",
+   "ss": 1.2,
+   "dur": 1.8,
+   "x": 0.72,
+   "zoom": [
+    1.15,
+    1.35
+   ],
+   "grade": "night",
+   "in": "flash",
+   "cap": [
+    "*17-0.*"
+   ],
+   "sfx": [
+    [
+     0.0,
+     "whoosh2",
+     0.5
+    ]
+   ],
+   "speed": 0.45
+  },
+  {
+   "t": "card",
+   "dur": 3.0,
+   "in": "fade",
+   "sfx": [
+    [
+     0.0,
+     "trailer",
+     0.55
+    ]
+   ]
+  }
+ ]
+}
