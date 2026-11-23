@@ -1,0 +1,73 @@
+{
+ "app": {
+  "name": "coldgas",
+  "tagline": "",
+  "bg": "#000000",
+  "accent": "#FFFFFF",
+  "ink": "#FFFFFF",
+  "icon": ""
+ },
+ "music": {
+  "track": "cold_trapelectro",
+  "vol": 0.5
+ },
+ "beds": [],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/cold-gas/01-show-launch-over-row.mp4",
+   "ss": 6.5,
+   "dur": 7.5,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "cut"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/cold-gas/03-wall-upside-down.mp4",
+   "ss": 6.0,
+   "dur": 6.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/cold-gas/04-wall-landing-judges-score-panel.mp4",
+   "ss": 4.8,
+   "dur": 5.5,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/cold-gas/07-free-drive-chase.mp4",
+   "ss": 2.0,
+   "dur": 4.5,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  }
+ ]
+}

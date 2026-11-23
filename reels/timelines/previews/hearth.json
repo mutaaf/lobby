@@ -1,0 +1,87 @@
+{
+ "app": {
+  "name": "hearth",
+  "tagline": "",
+  "bg": "#000000",
+  "accent": "#FFFFFF",
+  "ink": "#FFFFFF",
+  "icon": ""
+ },
+ "music": {
+  "track": "hearth_sleepycat",
+  "vol": 0.5
+ },
+ "beds": [],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/hearth/01-house-dark.mp4",
+   "ss": 0.3,
+   "dur": 5.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "cut"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/hearth/02-remote-orb-dark.mp4",
+   "ss": 0.9,
+   "dur": 6.5,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/hearth/03-scene-movie-night-dark.mp4",
+   "ss": 1.5,
+   "dur": 6.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/hearth/04-looks-to-8bit-remote.mp4",
+   "ss": 6.5,
+   "dur": 5.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/hearth/06-light-racer-game.mp4",
+   "ss": 4.5,
+   "dur": 5.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  }
+ ]
+}

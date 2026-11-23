@@ -1,0 +1,73 @@
+{
+ "app": {
+  "name": "17-0",
+  "tagline": "",
+  "bg": "#000000",
+  "accent": "#FFFFFF",
+  "ink": "#FFFFFF",
+  "icon": ""
+ },
+ "music": {
+  "track": "tz_sportshl",
+  "vol": 0.5
+ },
+ "beds": [],
+ "segments": [
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/17-0/01-spin-team-era-reveal.mp4",
+   "ss": 0.8,
+   "dur": 6.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "cut"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/17-0/02-pick-onto-field.mp4",
+   "ss": 1.2,
+   "dur": 6.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/17-0/04-seventh-pick-roster-complete.mp4",
+   "ss": 1.2,
+   "dur": 5.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  },
+  {
+   "t": "clip",
+   "src": "~/Movies/App Reels/recordings/17-0/05-reveal-13-4-elite.mp4",
+   "ss": 1.8,
+   "dur": 9.0,
+   "x": 0.5,
+   "y": 0.5,
+   "zoom": [
+    1.0,
+    1.0
+   ],
+   "grade": "none",
+   "in": "fade"
+  }
+ ]
+}

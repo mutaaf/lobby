@@ -1,51 +1,69 @@
 # Cinematic reels
 
-Social (9:16, with ASMR foley) and landing-page (16:9 / 9:16, muted) reels for each app: free stock footage
-of the real world, the app's real screens tracked into green-screen phones and TVs, captions, an icon end card.
+Free, local, open-source reels for every app: photoreal scenes generated on this Mac (LTX-2.3), the app's
+**real** simulator recordings tracked into the phones and TVs in those scenes, captions that land word by word,
+cuts on the music's beat, and foley at every real tap. Three outputs per app:
 
-**Never an App Store preview.** Apple wants previews to be full-screen recordings of the app (2.3.4; Hinge Pop
-0.3.2 was rejected for a framed reel on 2026-11-21). These cuts include non-app footage, so they go to social
-and the web only.
+| Output | Size | Where it goes |
+|---|---|---|
+| Social reel | 1080x1920, ~18 s, music + foley + scene sound, -14 LUFS | Reels, TikTok, Shorts |
+| Landing loop | 1280x720 / 720x1280, muted (`--mute --nocap --nocard` for a backdrop) | the app's page |
+| App Store preview | 886x1920, 15-30 s, `--clean`, recordings only, -16 LUFS | the next version in App Store Connect |
+
+**App Store previews may only show the app** (Apple 2.3.4; Hinge Pop 0.3.2 was rejected for a framed reel on
+2026-11-21). The preview timelines in `timelines/previews/` use only full-screen recordings: no generated or
+stock shots, no captions, no end card, no grain.
+
+## Pipeline
 
 ```
 python3 -m venv ~/.cache/lobby/reels-venv && ~/.cache/lobby/reels-venv/bin/pip install -r reels/requirements.txt
-python3 -I reels/fetch.py                       # Mixkit footage + sound into ~/.cache/lobby/stock (≈400 MB, once)
 PY=~/.cache/lobby/reels-venv/bin/python
-$PY reels/reel.py reels/timelines/hearth.json 1080 1920 out/hearth-9x16.mp4          # social, with sound
-$PY reels/reel.py reels/timelines/hearth.json 1920 1080 out/hearth-16x9.mp4 --mute   # landing loop
+python3 -I reels/fetch.py        # Mixkit stock footage + sound (free licence) → ~/.cache/lobby/stock
+$PY reels/music.py               # beat grid + peak window per track → stock/music/analysis.json
+reels/gen/run.sh                 # generate every shot in gen/shots.tsv → ~/.cache/lobby/gen/shots (≈8 min each)
+$PY reels/reel.py reels/timelines/hearth.json 1080 1920 out/hearth-9x16.mp4
+$PY reels/reel.py reels/timelines/previews/hearth.json 886 1920 out/hearth-preview.mp4 --clean
 ```
+Then loudness-normalise: social `-af loudnorm=I=-14:TP=-1.5`, previews `I=-16`.
 
-A full 1080x1920 render takes about 2 minutes. Re-encode for delivery: social `-crf 21`, landing loops
-1280x720 / 720x1280 `-crf 27 -an` (about 2 MB each).
+Recordings come from each app's simulator (`xcrun simctl io <udid> recordVideo`, status bar 9:41) into
+`~/Movies/App Reels/recordings/<app>/` with a `takes.json` listing every tap/drag (`t` in seconds) and, for games,
+logged moments (thrusters, touchdown, score). `reel.py` reads it and drops a tap, swipe, whoosh or score sound at
+each one, 0.12 s after the finger lands (when the app reacts).
+
+## Generated shots (gen/)
+- Engine: [ltx-2-mlx](https://github.com/dgrauet/ltx-2-mlx) (MIT) with `dgrauet/ltx-2.3-mlx-q8`, `--distilled`,
+  576x1024, 97 or 121 frames at 24 fps, native audio. The q8 pack downloads ~82 GB (it holds three
+  transformer variants; only `distilled` is used) plus the Gemma 3 12B 4-bit text encoder.
+- **Licence:** LTX-2 Community License. Free for entities under $10M annual revenue. Generated content must be
+  clearly disclosed: every timeline sets `app.disclose`, which the end card prints.
+- Prompt for a screen as "a perfectly flat, solid chroma-key green with nothing on it". The model renders it
+  anywhere from lime to mint and less pure than a studio screen; the keyer allows for that.
+- **It invents logos and lettering** (end-zone words, midfield emblems, ribbon boards) even when told not to.
+  Look at every shot; for apps that forbid marks (17-0, Cold Gas) drop or crop the shot. The stadium shot was
+  dropped for that reason.
+- Keep people adult. Distilled mode takes no negative prompt.
 
 ## Timelines
-`timelines/<app>.json`: `app` (name, tagline, colours, icon) + `beds` (`[sound, start, end, volume]`) +
-`segments`, each one of:
+`timelines/<app>.json`: `app` (name, tagline, colours, icon, `disclose`), `music` (`track`, `vol`), `beds`, and
+`segments`. A segment gives `beats` (snapped to the track's beat grid) or `dur`, and is one of:
 
 | `t` | what | keys |
 |---|---|---|
-| `clip` | a stock shot | `src` (Mixkit id), `ss`, `dur`, `speed`, `x`/`xl` (crop focus, portrait/landscape), `y`, `zoom` [from, to], `grade` (teal, warm, night, moon) |
-| `green` | a green-screen phone/TV with the app inside | as `clip`, plus `insert` (a screenshot path, or a footage id for video), `tv` (16:9 insert) |
-| `card` | icon end card | `dur` |
+| `clip` | a shot or a full-screen recording | `src`, `ss`, `speed`, `x`/`xl`, `y`, `zoom`, `grade` (teal, warm, night, moon, none), `ev`, `native_audio` (volume of the shot's own sound), `srcl`/`ssl`/`zooml`/`yl` (landscape source for 16:9) |
+| `green` | a green screen with the app inside | as `clip`, plus `insert` (recording .mp4, screenshot, or footage id), `iss`, `ispeed`, `tv` |
+| `card` | icon end card | |
 
-A `clip` can also carry `srcl` / `ssl` / `zooml` / `yl`: a native-landscape source used only for 16:9 renders.
-Flags: `--mute` (no audio), `--nocap` (no captions), `--nocard` (drop the end card): a landing backdrop behind
-other UI wants `--mute --nocap --nocard`.
+Every segment can have `cap` (`*word*` = accent), `in` (cut, fade, whip, flash), `sfx` (`[offset, sound, vol]`)
+and `auto_sfx: false` to skip foley from takes.json. `grade: "none"` keeps UI recordings colour-exact.
 
-**Real brands:** some apps forbid real brand, product or vehicle likenesses (Cold Gas AGENTS.md §3.7, 17-0's
-no-club-marks rule). Stock shots of real cars, rockets or branded helmets are out for those apps; use the
-app's own gameplay clips instead (Cold Gas: `dist-clips/`, `store/portals/crazygames/`).
+## Realism checklist (why v1 looked fake)
+Stills inside phones → live recordings. Flat paste → light spill onto hands/faces, a glass sheen fixed to the
+device, motion blur from the tracked movement, despill of the plate's green cast, plate-matched softness and
+grain. 720p stock → generated plates lit for the scene. Static captions → word-by-word pop. Free-timed cuts → cuts
+on the beat. Silence between taps → foley at every logged touch plus each plate's own room sound.
 
-Every segment can have `cap` (lines; `*word*` takes the accent colour), `in` (cut, fade, whip, flash) and
-`sfx` (`[offset, sound, volume]`). Look at a contact sheet of every render before shipping:
-`ffmpeg -i out.mp4 -vf "fps=2,scale=180:-1,tile=10x4" -frames:v 1 sheet.jpg`.
-
-## Footage and sound
-Mixkit (mixkit.co): free for commercial use, no attribution, no watermark. The raw clips must not be
-redistributed on their own, so they live only in the local cache and never in git. `footage.txt` lists the
-clip ids and what each shows; `fetch.py` has the sound titles.
-
-## Keying
-`Tracker` picks the most phone-shaped green contour (fill, aspect, nearness to the last frame), so green
-plants behind a phone are not keyed; the key is limited to the tracked screen. Thin tracking crosses on the
-green screens are closed away; fingers in front of the screen stay in front.
+## Look before shipping
+`ffmpeg -i out.mp4 -vf "fps=2,scale=180:-1,tile=10x4" -frames:v 1 sheet.jpg` and read every frame: keyed screens
+(no leftover green), no invented logos or text, no real brands where the app forbids them, captions clear of UI.

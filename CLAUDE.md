@@ -17,7 +17,7 @@ Read README.md first. The agent brief is `prompts/agent.md`; the rules there bin
 | xcode-select points at CommandLineTools on this Mac | `DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer` for every simctl/xcodebuild call (the cron exports it). |
 | Raw captures go in git as quality-90 JPEG, not PNG | A 55 MB PNG set (moon-club) made every `git push` die with "remote end hung up" on this Mac's ~200 KB/s uplink, and so did 4 MB. Single files through `gh api -X PUT repos/<o>/<r>/contents/<path>` got through, so the agent uses that when a push stalls. `sips -s format jpeg -s formatOptions 90`. |
 | The 17-0 repo forbids club names, marks and colours | Its `avoid` list carries the league and broadcaster names; frames name cities, never clubs. |
-| Cinematic reels need stock footage outside git | `reels/` renders social and landing reels from Mixkit clips cached in `~/.cache/lobby/stock` (`python3 -I reels/fetch.py`). Mixkit forbids redistributing raw clips, so they never go in the repo. These reels are never App Store previews (2.3.4). |
+| Cinematic reels are local and free | `reels/` renders social and landing reels: LTX-2.3 scenes generated on this Mac (`reels/gen/run.sh`, ~8 min a shot), the app's real simulator recordings tracked into them, music cut on the beat, foley from each take's `takes.json`. Stock and generated media stay in `~/.cache/lobby/` (Mixkit forbids redistributing raw clips). Generated content must be disclosed (LTX licence): the end card does it. Only `reels/timelines/previews/` (recordings only, `--clean`) may become App Store previews (2.3.4). |
 
 ## Changing the look
 
